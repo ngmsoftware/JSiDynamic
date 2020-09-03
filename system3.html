@@ -1,0 +1,224 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="../../libs/jquery-ui/jquery-ui.css">
+  <link rel="stylesheet" href="../../libs/styles.css">
+
+	<script src="../../libs/d3.v3.min.js"></script>
+	<script src="../../libs/jquery-min.js"></script>
+  <script src="../../libs/jquery-ui/jquery-ui.min.js"></script>
+
+	<script src="../../libs/plotly-latest.min.js"></script>
+	<script type="text/x-mathjax-config">
+	  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+	</script>
+	<script src="../../libs/MathJax-2.7.3/MathJax.js?config=TeX-AMS_CHTML"></script>
+
+	  <script src="../ControlSystems.js"></script>
+
+	<style type="text/css">
+
+
+.vars {
+     font-size: 14px;
+}
+
+
+.code {
+     font-size: 18px;
+}
+
+.while {
+     color: #00ff00;
+}
+
+.ref {
+     color: #aaaaaa;
+}
+
+.out {
+     color: #cccccc;
+}
+
+.err {
+     color: #cccccc;
+}
+
+.ctrl {
+     color: #ccccff;
+}
+
+body {
+    user-select: none; /* supported by Chrome and Opera */
+   -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+   -moz-user-select: none; /* Firefox */
+   -ms-user-select: none; /* Internet Explorer/Edge */
+}   
+
+	</style>
+
+
+</head>
+
+
+
+
+<body style="zoom: 100%;">
+
+
+<table width="1200">
+  <tr>
+    <td> <a href="index.html"><img src="images/back.png" width="40" style="vertical-align: middle;"></a> <span class="pageTitle"> 
+    Temperature System
+     </span> </td>
+    <td align="right"> <a href="#" onclick="help()"> Help </a> </td>
+</table>
+
+
+
+<table width="100%" border=0 id= "mainTable" background="images/bg.png">
+
+	<tr>
+		<td width="680">
+		<table id="tableSystemParameters" >
+			<tr>
+				<td>Thermal resistance : </td><td> <div id="sliderThermalResistance" style="width: 400px;"></div> </td> <td> <span id="spanThermalResistance" style="width : 50px; padding-left: 30px;">1</span> $^oC/W$ </td>
+			</tr>				
+			<tr>
+				<td>Thermal capacity : </td><td> <div id="sliderThermalCapacity" style="width: 400px;"></div> </td> <td> <span id="spanThermalCapacity" style="width : 50px; padding-left: 30px;">1</span>  $J/^oC$ </td>
+			</tr>				
+			<tr>
+				<td> Voltage Degree Factor : </td><td> <div id="sliderVoltageDegree" style="width: 400px;"></div> </td> <td> <span id="spanVoltageDegree" style="width : 50px; padding-left: 30px;">3</span> $V/^oC$ </td>
+			</tr>				
+		</table>
+		</td>
+		<td>
+			<table>
+
+				<tr>
+
+
+					<td width="150">
+
+						<select id="inputSelect" onchange="inputSelectChanged()">
+							<option value="none"> </option>
+							<option value="step"> Step </option>
+							<option value="pulse"> Pulse </option>
+							<option value="square"> Square </option>
+							<option value="sine"> Sine </option>
+							<option value="noise"> Noise </option>
+						</select> 
+						<br>
+						<button onclick="playButtonClicked()" id="playButton"> Play </button>
+						<button onclick="resetButtonClicked()" id="resetButton"> Reset </button>
+						<hr>
+				        <div id="divControl">
+						<button onclick="controlButtonClicked()" id= "buttonControl"> Control </button> 
+						ref: <input type="text" name="reference" id="textReference" size="4" value="0" onchange="textReferenceChanged()">
+						</div>
+					</td>
+					<td id="tdInfo">
+						time : <span id="spanTime">0</span>s<br>
+						amplitude : <span id="spanAmplitude">0</span><br>
+						frequency : <span id="spanFrequency">0</span>Hz<br>
+					</td>
+
+
+				</tr>
+			</table>
+
+		</td>
+  
+		<td id="tdDisplayType">
+			<input onchange="displayRadioChanged()" type="radio" id="displayRadio" name="displayRadio" value="images" > <label for="images">Image</label><br>
+			<input onchange="displayRadioChanged()" type="radio" id="displayRadio" name="displayRadio" value="blocks" checked> <label for="blocks">Blocks</label><br>
+
+		</td>
+	</tr>
+
+
+	<tr>
+		<td colspan="3" style="border-top: 1px solid gray; border-bottom: 1px solid gray;">
+			<div id="systemCanvas">
+				<canvas id="2DCanvas" width="1200" height="300" style="position: absolute; width: 1200px; height: 300px;"></canvas>
+			</div>
+		</td>
+	</tr>
+
+
+	<tr>
+		<td colspan="3">
+			<div id="osciloscopeDiv"></div>
+		</td>
+	</tr>
+
+</table>
+
+
+
+</body>
+
+
+
+<!--	<script src="../../libs/p5/p5.play.js"></script>  -->
+	<script src="../../libs/p5/p5.js"></script>
+	<script src="vars.js"></script>
+	<script src="utils.js"></script>
+	<script src="PlotClasses.js"></script>
+	<script src="SystemsClasses3.js"></script>
+	<script src="sketch.js"></script>
+	<script src="sketch3.js"></script>
+	<script src="Communication.js"></script>
+
+
+
+
+
+<script type="text/javascript">
+  
+$('#sliderThermalResistance').slider({
+      min: 0.4,
+      max: 5,
+      step: 0.01,
+      value: 1,
+      slide: function( event, ui ) {
+        $('#spanThermalResistance').html(ui.value);
+
+        _thermalResistance = ui.value;
+      }
+    });
+$('#sliderThermalCapacity').slider({
+      min: 0.4,
+      max: 5,
+      step: 0.01,
+      value: 1,
+      slide: function( event, ui ) {
+        $('#spanThermalCapacity').html(ui.value);
+
+        _thermalCapacity = ui.value;
+      }
+    });
+$('#sliderVoltageDegree').slider({
+      min: 0.4,
+      max: 10,
+      step: 0.01,
+      value: 3,
+      slide: function( event, ui ) {
+        $('#spanVoltageDegree').html(ui.value);
+
+        _voltageDegree = ui.value;
+      }
+    });
+
+$.ajax({type: "POST", url:  "access.php", data: "registration=guest&page=system3&parameter="});
+
+</script>
+
+  <script src="../../libs/helpLib.js"></script>
+  <link rel="stylesheet" href="../../libs/helpLib.css">
+
+<script type="text/javascript" src="help.js"></script>
+
+
+</html>

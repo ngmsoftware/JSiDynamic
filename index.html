@@ -1,0 +1,399 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="../../libs/jquery-ui/jquery-ui.css">
+
+	<script src="../../libs/d3.v3.min.js"></script>
+	<script src="../../libs/jquery-min.js"></script>
+  <script src="../../libs/jquery-ui/jquery-ui.min.js"></script>
+
+	<script src="../../libs/plotly-latest.min.js"></script>
+	<script type="text/x-mathjax-config">
+	  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+	</script>
+	<script src="../../libs/MathJax-2.7.3/MathJax.js?config=TeX-AMS_CHTML"></script>
+
+	  <script src="../ControlSystems.js"></script>
+
+  <script src="../../libs/helpLib.js"></script>
+  <link rel="stylesheet" href="../../libs/helpLib.css">
+
+
+	<style type="text/css">
+
+
+.vars {
+     font-size: 14px;
+}
+
+
+.code {
+     font-size: 18px;
+}
+
+.while {
+     color: #00ff00;
+}
+
+.ref {
+     color: #aaaaaa;
+}
+
+.out {
+     color: #cccccc;
+}
+
+.err {
+     color: #cccccc;
+}
+
+.ctrl {
+     color: #ccccff;
+}
+
+	</style>
+
+
+</head>
+
+
+
+
+<body style="zoom: 100%;">
+
+
+<div id="helpDiv" style="display: none;" title="System Responses WebApp">
+
+This WebApp is a virtual system simulator. This is its main menu. You can drag the mouse to bring each "folder" forward or backward to select a system. Each folder leads to its corresponding simulation.
+
+<p>
+Press OK to details of the items in this menu.
+  </div>
+
+</div>
+
+
+
+
+<div style = "position: absolute; width: 380px; height: 300px; left: 400px; top: 200px; " id="divItem1"></div>
+<div style = "position: absolute; width: 280px; height: 200px; left: 630px; top: 100px; " id="divItem2"></div>
+
+
+<div style = "width: 960px; height: 640px; background: url(images/bg1.png);">
+ 
+  <div id="systemCanvas">
+        <canvas id="2DCanvas" width="960" height="640" style="position: absolute; width: 960; height: 640px;"></canvas>
+   
+  </div>
+
+</div>
+
+<br>
+
+<table width="960">
+  <tr>
+    <td id= "tdRegistration" >Registration: <input type="text" id="registration" onchange="registerAccess()"></td>
+</table>
+
+</body>
+
+
+<script type="text/javascript">
+  
+
+function registerAccess() {
+  let reg = $('#registration').val();
+
+  $('#registration').prop('disabled',true);
+
+  $.ajax({type: "POST", url:  "access.php", data: "registration="+reg+"&page=registration&parameter="});
+
+}
+
+</script>
+
+
+
+
+  <script src="../../libs/p5/p5.js"></script>
+  <script src="sketch.js"></script>
+
+
+<script type="text/javascript">
+  
+let _K = 1.2;
+let _B = 0.1;  
+let _F = 10;
+let _Q = 0.01;
+let _d = 0.015;
+let _spacing = 0.4;
+
+var menuImg = [0, 0, 0, 0, 0, 0, 0];
+var menuPos = 0.0;
+var menuVel = 0.0;
+var menuForce = 0.0;
+let _dt = 0.005;
+var _isDragging = false;
+var _hasDragged = false;
+var _hasMousePressed = false;
+var CURSOR_SIZE = 20;
+
+
+
+function setup() {
+  var myCanvas = createCanvas(960, 640);
+  myCanvas.parent("systemCanvas");  
+  frameRate(60);
+
+}
+
+
+function processClick() {
+  var clickedIndex = -1;
+
+  for (var i = menuImg.length-1; i>=0;  i--) {
+
+    let r = computePosAndScale(-i);
+    let px = r[0];
+    let py = r[1];
+    let s = r[2];
+
+    if ( (mouseX > px) && (mouseY>py) && (mouseX< px+300*s) && (mouseY < py+200*s) ) {
+      clickedIndex = i;
+    }
+  }
+
+  if (clickedIndex>=0) {
+
+    if (clickedIndex==0)
+      help();;
+
+    if (clickedIndex>=1)
+      window.location.href = 'system'+(clickedIndex)+'.html';
+  }
+
+
+}
+
+
+function preload() {
+  loadImage('images/menu_about.png', (x) => {
+    menuImg[0] = x;
+  });
+  loadImage('images/menuSystem1.png', (x) => {
+    menuImg[1] = x;
+  });
+  loadImage('images/menuSystem2.png', (x) => {
+    menuImg[2] = x;
+  });
+  loadImage('images/menuSystem3.png', (x) => {
+    menuImg[3] = x;
+  });
+  loadImage('images/menuSystem4.png', (x) => {
+    menuImg[4] = x;
+  });
+  loadImage('images/menuSystem5.png', (x) => {
+    menuImg[5] = x;
+  });
+  loadImage('images/menuSystem6.png', (x) => {
+    menuImg[6] = x;
+  });
+  loadImage('images/menuSystem7.png', (x) => {
+    menuImg[7] = x;
+  });
+}
+
+
+function computePosAndScale(i) {
+    let px = 960 + 800*cos(menuPos + _spacing*i + 3*PI/4);
+    let py = 640 - 600*sin(menuPos + _spacing*i + 3*PI/4);
+    let s = _spacing+(0.8+(menuPos+_spacing*i));
+
+    return [px, py, s];
+}
+
+function mousePressed() {
+  _hasMousePressed = 10;
+  _isDragging = true;
+}
+
+
+
+function mouseReleased() {
+  _hasMousePressed = 10;
+
+  if (!_hasDragged) {
+    processClick();
+  }
+
+
+    _hasDragged = false;
+    _isDragging = false;
+
+
+}
+
+function mouseWheel(event) {
+
+
+  for (var i = 0; i < menuImg.length; i++) {
+    menuForce = _F*event.delta/960;
+  }
+
+
+  return false;
+}
+
+
+
+function clipMousePos() {
+  if (menuPos<-.3)
+    menuPos = -.3;
+
+  if (menuPos>menuImg.length*0.4)
+    menuPos = menuImg.length*0.4;
+
+}
+
+
+
+function mouseDragged(event) {
+
+  _hasDragged = true;
+
+  menuPos += (mouseY - pmouseY)/960;
+
+
+clipMousePos();
+
+
+  return false;
+}
+
+
+
+
+
+
+function computeMenuAnchorForce() {
+
+  var force = 0.0;
+  for (var i = menuImg.length-1; i>=0;  i--) {
+
+    let posx = i*_spacing;
+
+    let angle = Math.atan2( _d, posx - menuPos );
+
+    let dist = Math.sqrt(_d + (posx - menuPos)*(posx - menuPos));
+
+    force += _Q*cos(angle)/(dist*dist);
+  }
+
+
+  return force
+}
+
+
+
+function draw() {
+  clear();
+
+
+  drawCursor();
+
+
+  if (!_isDragging) {
+  
+    let force = computeMenuAnchorForce();
+    menuVel += -_B*menuVel + menuForce + force;
+
+    menuPos += menuVel*_dt;
+
+    clipMousePos();
+
+  }
+
+  for (var i = menuImg.length-1; i>=0;  i--) {
+    let r = computePosAndScale(-i);
+    let px = r[0];
+    let py = r[1];
+    let s = r[2];
+    image(menuImg[i], px, py, 300*s, 420*s);
+  }
+
+}
+
+
+$.ajax({type: "POST", url:  "access.php", data: "registration=guest&page=menu&parameter="});
+
+
+
+
+
+  function help() {
+
+    $('#helpDiv').dialog({
+      height: 600,
+      width: 600,
+      modal: true,
+      buttons: {
+        Cancel: function() {
+          $('#helpDiv').dialog( "close" );
+        },
+        Ok : function() {
+          $('#helpDiv').dialog( "close" );
+
+
+
+
+
+
+
+
+
+    showHelp($('#divItem1'), '\
+Click on each of those icons to access the corresponding system.<br><br>\
+Drag the mouse to move the icons\
+    ',()=>{
+
+    showHelp($('#divItem2'), '\
+Each icon access a system. When you drag the screen (swipe if you are in a mobile device), the icons move to the position of the previous one. You can click on anyone as soon as they appear in the screen.\
+    ',()=>{
+
+
+    showHelp($('#tdRegistration'), '\
+If you are a student, enter your students ID here to register your access. This will allow the teacher to know when you accessed the system.\
+    ',()=>{
+
+    });
+
+
+    });
+
+
+    });
+
+
+
+
+
+
+        } // dialog
+      } 
+    });
+
+  }
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+</html>

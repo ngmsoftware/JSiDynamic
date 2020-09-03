@@ -1,0 +1,268 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="../../libs/jquery-ui/jquery-ui.css">
+  <link rel="stylesheet" href="../../libs/styles.css">
+
+	<script src="../../libs/d3.v3.min.js"></script>
+	<script src="../../libs/jquery-min.js"></script>
+  <script src="../../libs/jquery-ui/jquery-ui.min.js"></script>
+
+	<script src="../../libs/plotly-latest.min.js"></script>
+	<script type="text/x-mathjax-config">
+	  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+	</script>
+	<script src="../../libs/MathJax-2.7.3/MathJax.js?config=TeX-AMS_CHTML"></script>
+
+	  <script src="../ControlSystems.js"></script>
+
+	<style type="text/css">
+
+
+.vars {
+     font-size: 14px;
+}
+
+
+.code {
+     font-size: 18px;
+}
+
+.while {
+     color: #00ff00;
+}
+
+.ref {
+     color: #aaaaaa;
+}
+
+.out {
+     color: #cccccc;
+}
+
+.err {
+     color: #cccccc;
+}
+
+.ctrl {
+     color: #ccccff;
+}
+
+body {
+    user-select: none; /* supported by Chrome and Opera */
+   -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+   -moz-user-select: none; /* Firefox */
+   -ms-user-select: none; /* Internet Explorer/Edge */
+}   
+
+	</style>
+
+
+</head>
+
+
+
+
+<body style="zoom: 100%;">
+
+
+<table width="1200">
+  <tr>
+    <td> <a href="index.html"><img src="images/back.png" width="40" style="vertical-align: middle;"></a> <span class="pageTitle"> 
+    Double Mechanical System
+     </span> </td>
+    <td align="right"> <a href="#" onclick="help()"> Help </a> </td>
+</table>
+
+
+
+
+<table width="100%" border=0 id= "mainTable" background="images/bg.png">
+
+	<tr>
+		<td width="720">
+		<table id="tableSystemParameters" >
+			<tr>
+				<td>Block 1 Mass : </td><td> <div id="sliderBlock1Mass" style="width: 400px;"></div> </td> <td> <span id="spanBlock1Mass" style="width : 50px; padding-left: 30px;">0.5</span> $Kg$ </td>
+			</tr>				
+			<tr>
+				<td>Block 2 Mass : </td><td> <div id="sliderBlock2Mass" style="width: 400px;"></div> </td> <td> <span id="spanBlock2Mass" style="width : 50px; padding-left: 30px;">0.5</span> $Kg$ </td>
+			</tr>				
+			<tr>
+				<td>Spring 1 constant : </td><td> <div id="sliderCartBlock1SpringConstant" style="width: 400px;"></div> </td> <td> <span id="spanCartBlock1SpringConstant" style="width : 50px; padding-left: 30px;">0.5</span> $N/m$ </td>
+			</tr>				
+			<tr>
+				<td>Spring 2 constant : </td><td> <div id="sliderBlock1Block2SpringConstant" style="width: 400px;"></div> </td> <td> <span id="spanBlock1Block2SpringConstant" style="width : 50px; padding-left: 30px;">0.5</span> $N/m$ </td>
+			</tr>				
+			<tr>
+				<td>Cart to Block 1 Friction : </td><td> <div id="sliderCartBlock1Friction" style="width: 400px;"></div> </td> <td> <span id="spanCartBlock1Friction" style="width : 50px; padding-left: 30px;">0.5</span> $N\,s/m$ </td>
+			</tr>				
+			<tr>
+				<td>Block 1 to Block 2 Friction : </td><td> <div id="sliderBlock1Block2Friction" style="width: 400px;"></div> </td> <td> <span id="spanBlock1Block2Friction" style="width : 50px; padding-left: 30px;">0.5</span> $N\,s/m$ </td>
+			</tr>				
+		</table>
+		</td>
+		<td>
+			<table>
+
+				<tr>
+
+
+					<td width="150">
+
+						<select id="inputSelect" onchange="inputSelectChanged()">
+							<option value="none"> </option>
+							<option value="step"> Step </option>
+							<option value="pulse"> Pulse </option>
+							<option value="square"> Square </option>
+							<option value="sine"> Sine </option>
+							<option value="noise"> Noise </option>
+						</select> 
+						<br>
+						<button onclick="playButtonClicked()" id="playButton"> Play </button>
+						<button onclick="resetButtonClicked()" id="resetButton"> Reset </button>
+						<hr>
+			            <div id="divControl">
+						<button onclick="controlButtonClicked()" id= "buttonControl"> Control </button> 
+						ref: <input type="text" name="reference" id="textReference" size="4" value="0" onchange="textReferenceChanged()">
+						</div>
+					</td>
+					<td id="tdInfo">
+						time : <span id="spanTime">0</span>s<br>
+						amplitude : <span id="spanAmplitude">0</span><br>
+						frequency : <span id="spanFrequency">0</span>Hz<br>
+					</td>
+
+
+				</tr>
+			</table>
+		</td>
+  
+		<td id="tdDisplayType">
+			<input onchange="displayRadioChanged()" type="radio" id="displayRadio" name="displayRadio" value="images"> <label for="images">Image</label><br>
+			<input onchange="displayRadioChanged()" type="radio" id="displayRadio" name="displayRadio" value="blocks"> <label for="blocks">Blocks</label><br>
+			<input onchange="displayRadioChanged()" type="radio" id="displayRadio" name="displayRadio" value="axis" checked> <label for="axis">Axis</label><br>
+
+		</td>
+	</tr>
+
+
+	<tr>
+		<td colspan="3" style="border-top: 1px solid gray; border-bottom: 1px solid gray;">
+			<div id="systemCanvas">
+				<canvas id="2DCanvas" width="1200" height="300" style="position: absolute; width: 1200px; height: 300px;"></canvas>
+			</div>
+		</td>
+	</tr>
+
+
+	<tr>
+		<td colspan="3">
+			<div id="osciloscopeDiv"></div>
+		</td>
+	</tr>
+
+</table>
+
+
+
+</body>
+
+
+
+<!--	<script src="../../libs/p5/p5.play.js"></script>  -->
+	<script src="../../libs/p5/p5.js"></script>
+	<script src="vars.js"></script>
+	<script src="utils.js"></script>
+	<script src="PlotClasses.js"></script>
+	<script src="SystemsClasses6.js"></script>
+	<script src="sketch.js"></script>
+	<script src="sketch6.js"></script>
+	<script src="Communication.js"></script>
+
+
+
+
+
+<script type="text/javascript">
+  
+$('#sliderBlock1Mass').slider({
+      min: 0.04,
+      max: 1,
+      step: 0.01,
+      value: 0.5,
+      slide: function( event, ui ) {
+        $('#spanBlock1Mass').html(ui.value);
+
+        _block1Mass = ui.value;
+      }
+    });
+$('#sliderBlock2Mass').slider({
+      min: 0.04,
+      max: 1,
+      step: 0.01,
+      value: 0.5,
+      slide: function( event, ui ) {
+        $('#spanBlock2Mass').html(ui.value);
+
+        _block2Mass = ui.value;
+      }
+    });
+$('#sliderCartBlock1SpringConstant').slider({
+      min: 0,
+      max: 1,
+      step: 0.01,
+      value: 0.5,
+      slide: function( event, ui ) {
+        $('#spanCartBlock1SpringConstant').html(ui.value);
+
+        _cartBlock1SpringConstant = ui.value;
+      }
+    });
+$('#sliderBlock1Block2SpringConstant').slider({
+      min: 0,
+      max: 1,
+      step: 0.01,
+      value: 0.5,
+      slide: function( event, ui ) {
+        $('#spanBlock1Block2SpringConstant').html(ui.value);
+
+        _block1Block2SpringConstant = ui.value;
+      }
+    });
+$('#sliderCartBlock1Friction').slider({
+      min: 0,
+      max: 1,
+      step: 0.01,
+      value: 0.5,
+      slide: function( event, ui ) {
+        $('#spanCartBlock1Friction').html(ui.value);
+
+        _cartBlock1Friction = ui.value;
+      }
+    });
+$('#sliderBlock1Block2Friction').slider({
+      min: 0,
+      max: 1,
+      step: 0.01,
+      value: 0.5,
+      slide: function( event, ui ) {
+        $('#spanBlock1Block2Friction').html(ui.value);
+
+        _block1Block2Friction = ui.value;
+      }
+    });
+
+
+$.ajax({type: "POST", url:  "access.php", data: "registration=guest&page=system6&parameter="});
+
+</script>
+
+  <script src="../../libs/helpLib.js"></script>
+  <link rel="stylesheet" href="../../libs/helpLib.css">
+
+<script type="text/javascript" src="help.js"></script>
+
+
+</html>

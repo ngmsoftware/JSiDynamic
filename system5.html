@@ -1,0 +1,251 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="../../libs/jquery-ui/jquery-ui.css">
+  <link rel="stylesheet" href="../../libs/styles.css">
+
+	<script src="../../libs/d3.v3.min.js"></script>
+	<script src="../../libs/jquery-min.js"></script>
+  <script src="../../libs/jquery-ui/jquery-ui.min.js"></script>
+
+	<script src="../../libs/plotly-latest.min.js"></script>
+	<script type="text/x-mathjax-config">
+	  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+	</script>
+	<script src="../../libs/MathJax-2.7.3/MathJax.js?config=TeX-AMS_CHTML"></script>
+
+	  <script src="../ControlSystems.js"></script>
+
+	<style type="text/css">
+
+
+.vars {
+     font-size: 14px;
+}
+
+
+.code {
+     font-size: 18px;
+}
+
+.while {
+     color: #00ff00;
+}
+
+.ref {
+     color: #aaaaaa;
+}
+
+.out {
+     color: #cccccc;
+}
+
+.err {
+     color: #cccccc;
+}
+
+.ctrl {
+     color: #ccccff;
+}
+
+body {
+    user-select: none; /* supported by Chrome and Opera */
+   -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+   -moz-user-select: none; /* Firefox */
+   -ms-user-select: none; /* Internet Explorer/Edge */
+}   
+
+	</style>
+
+
+</head>
+
+
+
+
+<body style="zoom: 100%;">
+
+
+<table width="1200">
+  <tr>
+    <td> <a href="index.html"><img src="images/back.png" width="40" style="vertical-align: middle;"></a> <span class="pageTitle"> 
+    Pendulum
+     </span> </td>
+    <td align="right"> <a href="#" onclick="help()"> Help </a> </td>
+</table>
+
+
+
+<table width="100%" border=0 id= "mainTable" background="images/bg.png">
+
+	<tr>
+		<td width="660">
+		<table id="tableSystemParameters" >
+			<tr>
+				<td>Cart mass : </td><td> <div id="sliderCartMass" style="width: 400px;"></div> </td> <td> <span id="spanCartMass" style="width : 50px; padding-left: 30px;">1</span> $Kg$ </td>
+			</tr>				
+			<tr>
+				<td> Cart friction : </td><td> <div id="sliderCartFriction" style="width: 400px;"></div> </td> <td> <span id="spanCartFriction" style="width : 50px; padding-left: 30px;">1</span> $N\,s/m$ </td>
+			</tr>				
+			<tr>
+				<td> Ball mass : </td><td> <div id="sliderBallMass" style="width: 400px;"></div> </td> <td> <span id="spanBallMass" style="width : 50px; padding-left: 30px;">1</span> $Kg$ </td>
+			</tr>				
+			<tr>
+				<td> Length : </td><td> <div id="sliderLength" style="width: 400px;"></div> </td> <td> <span id="spanLength" style="width : 50px; padding-left: 30px;">3</span> $m$ </td>
+			</tr>				
+			<tr>
+				<td> Gravity : </td><td> <div id="sliderGravity" style="width: 400px;"></div> </td> <td> <span id="spanGravity" style="width : 50px; padding-left: 30px;">3</span> $m/s^2$ </td>
+			</tr>				
+		</table>
+		</td>
+		<td>
+			<table>
+
+				<tr>
+
+
+					<td width="150">
+
+						<select id="inputSelect" onchange="inputSelectChanged()">
+							<option value="none"> </option>
+							<option value="step"> Step </option>
+							<option value="pulse"> Pulse </option>
+							<option value="square"> Square </option>
+							<option value="sine"> Sine </option>
+							<option value="noise"> Noise </option>
+						</select> 
+						<br>
+						<button onclick="playButtonClicked()" id="playButton"> Play </button>
+						<button onclick="resetButtonClicked()" id="resetButton"> Reset </button>
+						<hr>
+			            <div id="divControl">
+						<button onclick="controlButtonClicked()" id= "buttonControl"> Control </button> 
+						ref: <input type="text" name="reference" id="textReference" size="4" value="0" onchange="textReferenceChanged()">
+						</div>
+					</td>
+					<td id="tdInfo">
+						time : <span id="spanTime">0</span>s<br>
+						amplitude : <span id="spanAmplitude">0</span><br>
+						frequency : <span id="spanFrequency">0</span>Hz<br>
+					</td>
+
+
+				</tr>
+			</table>
+		</td>
+  
+		<td id="tdDisplayType">
+			<input onchange="displayRadioChanged()" type="radio" id="displayRadio" name="displayRadio" value="images" > <label for="images">Image</label><br>
+			<input onchange="displayRadioChanged()" type="radio" id="displayRadio" name="displayRadio" value="blocks" checked> <label for="blocks">Blocks</label><br>
+
+		</td>
+	</tr>
+
+
+	<tr>
+		<td colspan="3" style="border-top: 1px solid gray; border-bottom: 1px solid gray;">
+			<div id="systemCanvas">
+				<canvas id="2DCanvas" width="1200" height="300" style="position: absolute; width: 1200px; height: 300px;"></canvas>
+			</div>
+		</td>
+	</tr>
+
+
+	<tr>
+		<td colspan="3">
+			<div id="osciloscopeDiv"></div>
+		</td>
+	</tr>
+
+</table>
+
+
+
+</body>
+
+
+
+<!--	<script src="../../libs/p5/p5.play.js"></script>  -->
+	<script src="../../libs/p5/p5.js"></script>
+	<script src="vars.js"></script>
+	<script src="utils.js"></script>
+	<script src="PlotClasses.js"></script>
+	<script src="SystemsClasses5.js"></script>
+	<script src="sketch.js"></script>
+	<script src="sketch5.js"></script>
+	<script src="Communication.js"></script>
+
+
+
+
+
+<script type="text/javascript">
+  
+$('#sliderCartMass').slider({
+      min: 0.5,
+      max: 5.0,
+      step: 0.01,
+      value: 2.5,
+      slide: function( event, ui ) {
+        $('#spanCartMass').html(ui.value);
+
+        _cartMass = ui.value;
+      }
+    });
+$('#sliderBallMass').slider({
+      min: 0.0,
+      max: 1,
+      step: 0.01,
+      value: 0.05,
+      slide: function( event, ui ) {
+        $('#spanBallMass').html(ui.value);
+
+        _ballMass = ui.value;
+      }
+    });
+$('#sliderCartFriction').slider({
+      min: 0.0,
+      max: 10,
+      step: 0.01,
+      value: 0.1,
+      slide: function( event, ui ) {
+        $('#spanCartFriction').html(ui.value);
+
+        _cartFriction = ui.value;
+      }
+    });
+$('#sliderLength').slider({
+      min: 0.01,
+      max: 1,
+      step: 0.01,
+      value: 0.5,
+      slide: function( event, ui ) {
+        $('#spanLength').html(ui.value);
+
+        _length = ui.value;
+      }
+    });
+$('#sliderGravity').slider({
+      min: 0.0,
+      max: 30,
+      step: 0.01,
+      value: 9.8,
+      slide: function( event, ui ) {
+        $('#spanGravity').html(ui.value);
+
+        _gravity = ui.value;
+      }
+    });
+
+$.ajax({type: "POST", url:  "access.php", data: "registration=guest&page=system5&parameter="});
+
+</script>
+
+  <script src="../../libs/helpLib.js"></script>
+  <link rel="stylesheet" href="../../libs/helpLib.css">
+
+<script type="text/javascript" src="help.js"></script>
+
+
+</html>
