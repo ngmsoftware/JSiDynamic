@@ -30,10 +30,9 @@ function init() {
   $('#systemCanvas').width(SCREEN_SIZE_W);
   $('#mainTable').width(SCREEN_SIZE_W);
 
-
   $('#sliderBlock1Inertia').slider('value',_block1Inertia);
   $('#sliderBlock2Inertia').slider('value',_block2Inertia);
-  $('#sliderBlock31Inertia').slider('value',_block3Inertia);
+  $('#sliderBlock3Inertia').slider('value',_block3Inertia);
   $('#sliderBlock1Friction').slider('value',_block1Friction);
   $('#sliderBlock2Friction').slider('value',_block2Friction);
   $('#sliderSpring1Constant').slider('value',_spring1Constant);
@@ -42,7 +41,7 @@ function init() {
 
   $('#spanBlock1Inertia').html(_block1Inertia);
   $('#spanBlock2Inertia').html(_block2Inertia);
-  $('#spanBlock31Inertia').html(_block3Inertia);
+  $('#spanBlock3Inertia').html(_block3Inertia);
   $('#spanBlock1Friction').html(_block1Friction);
   $('#spanBlock2Friction').html(_block2Friction);
   $('#spanSpring1Constant').html(_spring1Constant);

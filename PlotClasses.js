@@ -79,9 +79,9 @@ class Osciloscope {
 			});
 		}
 
-
-
 		Plotly.newPlot(this.divName, this.tracesInput.concat(this.tracesOutput.concat(this.tracesReferences)), this.layout,  {displayModeBar: false, staticPlot:true});
+
+//		$('#'+divName).after($('<input id="gridEdit" type="button" value="X" onclick="$(\'#'+divName+'\').toggle()"   />'));
 
 	}
 

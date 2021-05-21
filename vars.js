@@ -144,3 +144,37 @@ _predatorNumberRef = 10;
 _prayNumberRef = 10;
 
 
+// motor
+
+var _inertia = 1.0;
+var _friction = 0.1;
+var _resistance = 0.0401;
+var _inductance = 0.0004;
+var _Kv = 1.0;
+var _Kt = 1.0;
+var _P = 500.0;
+
+var _ang = 0.0;
+var _vel = 0.0;
+var _acc = 0.0;
+
+var _angRef = 0.0;
+
+// double bar
+
+
+
+var _bar1SpringConstant = 130.0;
+var _bar1Friction = 10.0;
+var _bar1Inertia = 1.0;
+var _bar2SpringConstant = 10.0;
+var _bar2Friction = 1.0;
+var _bar2Inertia = 0.1;
+
+var _bar1Angle = 0.0;
+var _bar2Angle = 0.0;
+var _bar1Velocity = 0.0;
+var _bar2Velocity = 0.0;
+
+var _bar1TorqueInput = 0.0;
+var _bar1TorqueRef = 0.0;

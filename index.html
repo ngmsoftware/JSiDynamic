@@ -168,8 +168,9 @@ function processClick() {
     if (clickedIndex==0)
       help();;
 
-    if (clickedIndex>=1)
+    if (clickedIndex>=1) {
       window.location.href = 'system'+(clickedIndex)+'.html';
+    }
   }
 
 
@@ -200,6 +201,12 @@ function preload() {
   });
   loadImage('images/menuSystem7.png', (x) => {
     menuImg[7] = x;
+  });
+  loadImage('images/menuSystem8.png', (x) => {
+    menuImg[8] = x;
+  });
+  loadImage('images/menuSystem9.png', (x) => {
+    menuImg[9] = x;
   });
 }
 
@@ -318,7 +325,8 @@ function draw() {
     let px = r[0];
     let py = r[1];
     let s = r[2];
-    image(menuImg[i], px, py, 300*s, 420*s);
+    if (s>0)
+      image(menuImg[i], px, py, 300*s, 420*s);
   }
 
 }

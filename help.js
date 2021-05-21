@@ -47,11 +47,11 @@ This is the main oscilloscope. Here you can see the plot for the dynamical varia
 
     }, null, 0, 1000);
 
-    });
+    }, null, 10);
 
-    });
+    }, null, 10);
 
-    });
+    }, null, 10);
 
     });
 

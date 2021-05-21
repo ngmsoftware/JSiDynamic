@@ -210,9 +210,17 @@ function mouseWheel(event) {
 }
 
 
+var dragAmount = 0
+var sawPrize = false
 function mouseDragged() {
   if (_isDragging && (_input == "none")) {
     _globalInput += _inputScale*(mouseX - pmouseX)/width;
+
+    // dragAmount += 1
+    // if (dragAmount > 100 && !sawPrize) {
+    //   alert("Congratulations for using iDynamic! You might earn 1.0 point in the discipline! Send an email to me (allan@dee.ufrn.br) referring to this code: CTRL_I_EA_2020.2. If you happen to be the first three to see this message, congratulations, you earned 1.0 point. If more than 3 people already won, don't give up! There might be mode points hidden in the apps (not only this one)");
+    //   sawPrize = true;
+    // }
   }
 
   return false;
