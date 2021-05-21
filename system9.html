@@ -1,0 +1,279 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="../../libs/jquery-ui/jquery-ui.css">
+  <link rel="stylesheet" href="../../libs/styles.css">
+
+	<script src="../../libs/d3.v3.min.js"></script>
+	<script src="../../libs/jquery-min.js"></script>
+  <script src="../../libs/jquery-ui/jquery-ui.min.js"></script>
+
+	<script src="../../libs/plotly-latest.min.js"></script>
+	<script type="text/x-mathjax-config">
+	  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+	</script>
+	<script src="../../libs/MathJax-2.7.3/MathJax.js?config=TeX-AMS_CHTML"></script>
+
+	  <script src="../ControlSystems.js"></script>
+
+	<style type="text/css">
+
+
+.vars {
+     font-size: 14px;
+}
+
+
+.code {
+     font-size: 18px;
+}
+
+.while {
+     color: #00ff00;
+}
+
+.ref {
+     color: #aaaaaa;
+}
+
+.out {
+     color: #cccccc;
+}
+
+.err {
+     color: #cccccc;
+}
+
+.ctrl {
+     color: #ccccff;
+}
+
+body {
+    user-select: none; /* supported by Chrome and Opera */
+   -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+   -moz-user-select: none; /* Firefox */
+   -ms-user-select: none; /* Internet Explorer/Edge */
+}   
+
+	</style>
+
+
+</head>
+
+
+
+
+<body style="zoom: 100%;">
+
+
+
+
+<table width="1200">
+  <tr>
+    <td> <a href="index.html"><img src="images/back.png" width="40" style="vertical-align: middle;"></a> <span class="pageTitle"> 
+    Double bar system
+     </span> </td>
+    <td align="right"> <a href="#" onclick="help()"> Help </a> </td>
+</table>
+
+
+
+
+
+
+<table width="100%" border=0 id= "mainTable" background="images/bg.png" >
+
+	<tr>
+		<td width="730">
+		<table id="tableSystemParameters" >
+			<tr>
+				<td>Bar 1 spring constant : </td><td> <div id="sliderBar1SpringConstant" style="width: 400px;"></div> </td> <td> <span id="spanBar1SpringConstant" style="width : 50px; padding-left: 30px;">0.5</span> $N\,m / rad$</td>
+			</tr>				
+      <tr>
+        <td>Bar 1 friction : </td><td> <div id="sliderBar1Friction" style="width: 400px;"></div> </td> <td> <span id="spanBar1Friction" style="width : 50px; padding-left: 30px;">0.5</span> $N\,m\,s/rad$ </td>
+      </tr>       
+      <tr>
+        <td>Bar 1 inertia : </td><td> <div id="sliderBar1Inertia" style="width: 400px;"></div> </td> <td> <span id="spanBar1Inertia" style="width : 50px; padding-left: 30px;">0.5</span> $Kg\,m$ </td>
+      </tr>       
+      <tr>
+        <td>Bar 2 spring constant : </td><td> <div id="sliderBar2SpringConstant" style="width: 400px;"></div> </td> <td> <span id="spanBar2SpringConstant" style="width : 50px; padding-left: 30px;">0.5</span> $N\,m / rad$</td>
+      </tr>       
+      <tr>
+        <td>Bar 2 friction : </td><td> <div id="sliderBar2Friction" style="width: 400px;"></div> </td> <td> <span id="spanBar2Friction" style="width : 50px; padding-left: 30px;">0.5</span> $N\,m\,s/rad$ </td>
+      </tr>       
+      <tr>
+        <td>Bar 2 inertia : </td><td> <div id="sliderBar2Inertia" style="width: 400px;"></div> </td> <td> <span id="spanBar2Inertia" style="width : 50px; padding-left: 30px;">0.5</span> $Kg\,m$ </td>
+      </tr>       
+
+		</table>
+		</td>
+		<td>
+
+      <table >
+
+        <tr>
+
+
+          <td width="130">
+
+            <select id="inputSelect" onchange="inputSelectChanged()">
+              <option value="none"> </option>
+              <option value="step"> Step </option>
+              <option value="pulse"> Pulse </option>
+              <option value="square"> Square </option>
+              <option value="sine"> Sine </option>
+              <option value="noise"> Noise </option>
+            </select> 
+            <br>
+            <button onclick="playButtonClicked()" id="playButton"> Play </button>
+            <button onclick="resetButtonClicked()" id="resetButton"> Reset </button>
+            <hr>
+            <div id="divControl">
+            <button onclick="controlButtonClicked()" id= "buttonControl"> Control </button> 
+            ref: <input type="text" name="reference" id="textReference" size="4" value="0" onchange="textReferenceChanged()">
+            </div>
+          </td>
+          <td id="tdInfo">
+            time : <span id="spanTime">0</span>s<br>
+            amplitude : <span id="spanAmplitude">0</span><br>
+            frequency : <span id="spanFrequency">0</span>Hz<br>
+          </td>
+
+
+        </tr>
+      </table>
+
+
+		</td>
+  
+    <td id="tdDisplayType">
+			<input onchange="displayRadioChanged()" type="radio" id="displayRadio" name="displayRadio" value="images" > <label for="images">Image</label><br>
+			<input onchange="displayRadioChanged()" type="radio" id="displayRadio" name="displayRadio" value="blocks" checked> <label for="blocks">Blocks</label><br>
+
+		</td>
+	</tr>
+
+
+	<tr>
+    <td colspan="3" style="border-top: 1px solid gray; border-bottom: 1px solid gray;">
+			<div id="systemCanvas">
+        <canvas id="2DCanvas" width="1200" height="300" style="position: absolute; width: 1200px; height: 300px;"></canvas>
+      </div>
+		</td>
+	</tr>
+
+
+	<tr>
+		<td colspan="3">
+			<div id="osciloscopeDiv"></div>
+		</td>
+	</tr>
+
+</table>
+
+
+
+</body>
+
+
+
+<!--	<script src="../../libs/p5/p5.play.js"></script>  -->
+  <script src="../../libs/p5/p5.js"></script>
+	<script src="vars.js"></script>
+	<script src="utils.js"></script>
+	<script src="PlotClasses.js"></script>
+	<script src="SystemsClasses9.js"></script>
+  <script src="sketch.js"></script>
+  <script src="sketch9.js"></script>
+  <script src="Communication.js"></script>
+
+
+
+
+
+<script type="text/javascript">
+  
+$('#sliderBar1SpringConstant').slider({
+      min: 0.0,
+      max: 3*_bar1SpringConstant,
+      step: 0.1,
+      value: _bar1SpringConstant,
+      slide: function( event, ui ) {
+        $('#spanBar1SpringConstant').html(ui.value);
+
+        _bar1SpringConstant = ui.value;
+      }
+    });
+$('#sliderBar1Friction').slider({
+      min: 0.0,
+      max: 10*_bar1Friction,
+      step: 0.1,
+      value: _bar1Friction,
+      slide: function( event, ui ) {
+        $('#spanBar1Friction').html(ui.value);
+
+        _bar1Friction = ui.value;
+      }
+    });
+$('#sliderBar1Inertia').slider({
+      min: 0.1,
+      max: 10*_bar1Inertia,
+      step: 0.1,
+      value: _bar1Inertia,
+      slide: function( event, ui ) {
+        $('#spanBar1Inertia').html(ui.value);
+
+        _bar1Inertia = ui.value;
+      }
+    });
+
+$('#sliderBar2SpringConstant').slider({
+      min: 0.0,
+      max: 10*_bar2SpringConstant,
+      step: 0.01,
+      value: _bar2SpringConstant,
+      slide: function( event, ui ) {
+        $('#spanBar2SpringConstant').html(ui.value);
+
+        _bar2SpringConstant = ui.value;
+      }
+    });
+$('#sliderBar2Friction').slider({
+      min: 0.0,
+      max: 10*_bar2Friction,
+      step: 0.01,
+      value: _bar2Friction,
+      slide: function( event, ui ) {
+        $('#spanBar2Friction').html(ui.value);
+
+        _bar2Friction = ui.value;
+      }
+    });
+$('#sliderBar2Inertia').slider({
+      min: 0.1,
+      max: 10*_bar1Inertia,
+      step: 0.01,
+      value: _bar2Inertia,
+      slide: function( event, ui ) {
+        $('#spanBar2Inertia').html(ui.value);
+
+        _bar2Inertia = ui.value;
+      }
+    });
+
+
+
+
+$.ajax({type: "POST", url:  "access.php", data: "registration=guest&page=system8&parameter="});
+
+</script>
+
+
+  <script src="../../libs/helpLib.js"></script>
+  <link rel="stylesheet" href="../../libs/helpLib.css">
+
+<script type="text/javascript" src="help.js"></script>
+
+
+</html>

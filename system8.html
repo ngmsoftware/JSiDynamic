@@ -1,0 +1,284 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="../../libs/jquery-ui/jquery-ui.css">
+  <link rel="stylesheet" href="../../libs/styles.css">
+
+	<script src="../../libs/d3.v3.min.js"></script>
+	<script src="../../libs/jquery-min.js"></script>
+  <script src="../../libs/jquery-ui/jquery-ui.min.js"></script>
+
+	<script src="../../libs/plotly-latest.min.js"></script>
+	<script type="text/x-mathjax-config">
+	  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+	</script>
+	<script src="../../libs/MathJax-2.7.3/MathJax.js?config=TeX-AMS_CHTML"></script>
+
+	  <script src="../ControlSystems.js"></script>
+
+	<style type="text/css">
+
+
+.vars {
+     font-size: 14px;
+}
+
+
+.code {
+     font-size: 18px;
+}
+
+.while {
+     color: #00ff00;
+}
+
+.ref {
+     color: #aaaaaa;
+}
+
+.out {
+     color: #cccccc;
+}
+
+.err {
+     color: #cccccc;
+}
+
+.ctrl {
+     color: #ccccff;
+}
+
+body {
+    user-select: none; /* supported by Chrome and Opera */
+   -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+   -moz-user-select: none; /* Firefox */
+   -ms-user-select: none; /* Internet Explorer/Edge */
+}   
+
+	</style>
+
+
+</head>
+
+
+
+
+<body style="zoom: 100%;">
+
+
+
+
+<table width="1200">
+  <tr>
+    <td> <a href="index.html"><img src="images/back.png" width="40" style="vertical-align: middle;"></a> <span class="pageTitle"> 
+    DC Motor System
+     </span> </td>
+    <td align="right"> <a href="#" onclick="help()"> Help </a> </td>
+</table>
+
+
+
+
+
+
+<table width="100%" border=0 id= "mainTable" background="images/bg.png" >
+
+	<tr>
+		<td width="710">
+		<table id="tableSystemParameters" >
+			<tr>
+				<td>Rotor inertia : </td><td> <div id="sliderInertia" style="width: 400px;"></div> </td> <td> <span id="spanInertia" style="width : 50px; padding-left: 30px;">0.5</span> $Kg\,m$</td>
+			</tr>				
+      <tr>
+        <td>Rotor friction : </td><td> <div id="sliderFriction" style="width: 400px;"></div> </td> <td> <span id="spanFriction" style="width : 50px; padding-left: 30px;">0.5</span> $N\,m\,s/rad$ </td>
+      </tr>       
+      <tr>
+        <td>Coil resistance : </td><td> <div id="sliderResistance" style="width: 400px;"></div> </td> <td> <span id="spanResistance" style="width : 50px; padding-left: 30px;">0.5</span> $\Omega$ </td>
+      </tr>       
+
+			<tr>
+				<td>Coil inductance : </td><td> <div id="sliderInductance" style="width: 400px;"></div> </td> <td> <span id="spanInductance" style="width : 50px; padding-left: 30px;">0.5</span> $H$ </td>
+			</tr>				
+      <tr>
+        <td> Kv : </td><td> <div id="sliderKv" style="width: 400px;"></div> </td> <td> <span id="spanKv" style="width : 50px; padding-left: 30px;">0.5</span> $V\,s/rad$ </td>
+      </tr>       
+      <tr>
+
+			<tr>
+				<td> Kt  : </td><td> <div id="sliderKt" style="width: 400px;"></div> </td> <td> <span id="spanKt" style="width : 50px; padding-left: 30px;">0.5</span> $N\,m^2/A$ </td>
+			</tr>				
+
+		</table>
+		</td>
+		<td>
+
+      <table >
+
+        <tr>
+
+
+          <td width="130">
+
+            <select id="inputSelect" onchange="inputSelectChanged()">
+              <option value="none"> </option>
+              <option value="step"> Step </option>
+              <option value="pulse"> Pulse </option>
+              <option value="square"> Square </option>
+              <option value="sine"> Sine </option>
+              <option value="noise"> Noise </option>
+            </select> 
+            <br>
+            <button onclick="playButtonClicked()" id="playButton"> Play </button>
+            <button onclick="resetButtonClicked()" id="resetButton"> Reset </button>
+            <hr>
+            <div id="divControl">
+            <button onclick="controlButtonClicked()" id= "buttonControl"> Control </button> 
+            ref: <input type="text" name="reference" id="textReference" size="4" value="0" onchange="textReferenceChanged()">
+            </div>
+          </td>
+          <td id="tdInfo">
+            time : <span id="spanTime">0</span>s<br>
+            amplitude : <span id="spanAmplitude">0</span><br>
+            frequency : <span id="spanFrequency">0</span>Hz<br>
+          </td>
+
+
+        </tr>
+      </table>
+
+
+		</td>
+  
+    <td id="tdDisplayType">
+			<input onchange="displayRadioChanged()" type="radio" id="displayRadio" name="displayRadio" value="images" > <label for="images">Image</label><br>
+			<input onchange="displayRadioChanged()" type="radio" id="displayRadio" name="displayRadio" value="blocks" checked> <label for="blocks">Blocks</label><br>
+
+		</td>
+	</tr>
+
+
+	<tr>
+    <td colspan="3" style="border-top: 1px solid gray; border-bottom: 1px solid gray;">
+			<div id="systemCanvas">
+        <canvas id="2DCanvas" width="1200" height="300" style="position: absolute; width: 1200px; height: 300px;"></canvas>
+      </div>
+		</td>
+	</tr>
+
+
+	<tr>
+		<td colspan="3">
+			<div id="osciloscopeDiv"></div>
+		</td>
+	</tr>
+
+</table>
+
+
+
+</body>
+
+
+
+<!--	<script src="../../libs/p5/p5.play.js"></script>  -->
+  <script src="../../libs/p5/p5.js"></script>
+	<script src="vars.js"></script>
+	<script src="utils.js"></script>
+	<script src="PlotClasses.js"></script>
+	<script src="SystemsClasses8.js"></script>
+  <script src="sketch.js"></script>
+  <script src="sketch8.js"></script>
+  <script src="Communication.js"></script>
+
+
+
+
+
+<script type="text/javascript">
+  
+$('#sliderInertia').slider({
+      min: 0.1,
+      max: 10*_inertia,
+      step: _inertia/10.0,
+      value: _inertia,
+      slide: function( event, ui ) {
+        $('#spanInertia').html(ui.value);
+
+        _inertia = ui.value;
+      }
+    });
+$('#sliderFriction').slider({
+      min: 0.1,
+      max: 10*_friction,
+      step: _friction/10.0,
+      value: _friction,
+      slide: function( event, ui ) {
+        $('#spanFriction').html(ui.value);
+
+        _friction = ui.value;
+      }
+    });
+$('#sliderResistance').slider({
+      min: 0.1,
+      max: 10*_resistance,
+      step: _resistance/10.0,
+      value: _resistance,
+      slide: function( event, ui ) {
+        $('#spanResistance').html(ui.value);
+
+        _resistance = ui.value;
+      }
+    });
+
+
+
+$('#sliderInductance').slider({
+      min: 0.0,
+      max: 10*_inductance,
+      step: _inductance/10.0,
+      value: _inductance,
+      slide: function( event, ui ) {
+        $('#spanInductance').html(ui.value);
+
+        _inductance = ui.value;
+      }
+    });
+
+$('#sliderKv').slider({
+      min: 0.0,
+      max: 10*_Kv,
+      step: _Kv/10.0,
+      value: _Kv,
+      slide: function( event, ui ) {
+        $('#spanKv').html(ui.value);
+
+        _Kv = ui.value;
+      }
+    });
+
+
+$('#sliderKt').slider({
+      min: 0.0,
+      max: 10*_Kt,
+      step: _Kt/10.0,
+      value: _Kt,
+      slide: function( event, ui ) {
+        $('#spanKt').html(ui.value);
+
+        _Kt = ui.value;
+      }
+    });
+
+$.ajax({type: "POST", url:  "access.php", data: "registration=guest&page=system8&parameter="});
+
+</script>
+
+
+  <script src="../../libs/helpLib.js"></script>
+  <link rel="stylesheet" href="../../libs/helpLib.css">
+
+<script type="text/javascript" src="help.js"></script>
+
+
+</html>
